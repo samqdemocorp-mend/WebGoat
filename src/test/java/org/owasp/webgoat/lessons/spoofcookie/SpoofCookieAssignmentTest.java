@@ -18,6 +18,7 @@
  * Getting Source ==============
  *
  * Source for this application is maintained at https://github.com/WebGoat/WebGoat, a repository for free software projects.
+ * Test update
  */
 
 package org.owasp.webgoat.lessons.spoofcookie;
