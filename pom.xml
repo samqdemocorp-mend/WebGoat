@@ -110,7 +110,7 @@
   <properties>
 
     <!-- Shared properties with plugins and version numbers across submodules-->
-    <asciidoctorj.version>2.5.3</asciidoctorj.version>
+    <asciidoctorj.version>2.5.11</asciidoctorj.version>
     <bootstrap.version>3.3.7</bootstrap.version>
     <cglib.version>2.2.2</cglib.version>
     <!-- do not update necessary for lesson -->
@@ -145,7 +145,7 @@
     <xml-resolver.version>1.2</xml-resolver.version>
     <xstream.version>1.4.20</xstream.version>
     <!-- do not update necessary for lesson -->
-    <zxcvbn.version>1.5.2</zxcvbn.version>
+    <zxcvbn.version>1.8.2</zxcvbn.version>
   </properties>
 
   <dependencyManagement>
