@@ -54,34 +54,34 @@ public class SqlInjectionChallenge2 extends AssignmentEndpoint {
   // assignment path is bounded to class so we use different http method :-)
   @ResponseBody
   public AttackResult registerNewUser(
-      @RequestParam String username_reg,
+      @RequestParam String username_reg2,
       @RequestParam String email_reg,
       @RequestParam String password_reg)
       throws Exception {
-    AttackResult attackResult = checkArguments(username_reg, email_reg, password_reg);
+    AttackResult attackResult = checkArguments(username_reg2, email_reg, password_reg);
 
     if (attackResult == null) {
 
       try (Connection connection = dataSource.getConnection()) {
         String checkUserQuery =
-            "select userid from sql_challenge_users where userid = '" + username_reg + "'";
+            "select userid from sql_challenge_users where userid = '" + username_reg2 + "'";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(checkUserQuery);
 
         if (resultSet.next()) {
-          if (username_reg.contains("tom'")) {
+          if (username_reg2.contains("tom'")) {
             attackResult = success(this).feedback("user.exists").build();
           } else {
-            attackResult = failed(this).feedback("user.exists").feedbackArgs(username_reg).build();
+            attackResult = failed(this).feedback("user.exists").feedbackArgs(username_reg2).build();
           }
         } else {
           PreparedStatement preparedStatement =
               connection.prepareStatement("INSERT INTO sql_challenge_users VALUES (?, ?, ?)");
-          preparedStatement.setString(1, username_reg);
+          preparedStatement.setString(1, username_reg2);
           preparedStatement.setString(2, email_reg);
           preparedStatement.setString(3, password_reg);
           preparedStatement.execute();
-          attackResult = success(this).feedback("user.created").feedbackArgs(username_reg).build();
+          attackResult = success(this).feedback("user.created").feedbackArgs(username_reg2).build();
         }
       } catch (SQLException e) {
         attackResult = failed(this).output("Something went wrong").build();
@@ -90,13 +90,13 @@ public class SqlInjectionChallenge2 extends AssignmentEndpoint {
     return attackResult;
   }
 
-  private AttackResult checkArguments(String username_reg, String email_reg, String password_reg) {
-    if (StringUtils.isEmpty(username_reg)
+  private AttackResult checkArguments(String username_reg2, String email_reg, String password_reg) {
+    if (StringUtils.isEmpty(username_reg2)
         || StringUtils.isEmpty(email_reg)
         || StringUtils.isEmpty(password_reg)) {
       return failed(this).feedback("input.invalid").build();
     }
-    if (username_reg.length() > 250 || email_reg.length() > 30 || password_reg.length() > 30) {
+    if (username_reg2.length() > 250 || email_reg.length() > 30 || password_reg.length() > 30) {
       return failed(this).feedback("input.invalid").build();
     }
     return null;
