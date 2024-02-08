@@ -53,7 +53,7 @@ jobs:
           build-args: |
             webgoat_version=${{ env.WEBGOAT_MAVEN_VERSION }}
 
-      - name: Mend CLI Image Scan on Release
+      - name: Mend CLI Scan on Release
         if: startsWith(github.ref, 'refs/heads/v') && github.event_name == 'push'
         env:
           MEND_EMAIL: ${{secrets.MEND_EMAIL}}
@@ -64,6 +64,8 @@ jobs:
           curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend
           echo "Start Mend image scan"
           ./mend image webgoat/webgoat:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
+          ./mend iac -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}} 
+          ./mend code -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}} -j 2 --js 2
 
       - name: Mend CLI Image Scan on Main
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
