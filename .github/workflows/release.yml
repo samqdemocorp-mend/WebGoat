@@ -48,8 +48,8 @@ jobs:
           push: false
           load: true
           tags: |
-            webgoat/webgoat:${{ env.WEBGOAT_TAG_VERSION }}
-            webgoat/webgoat:latest
+            sam-webgoat/webgoat:${{ env.WEBGOAT_TAG_VERSION }}
+            sam-webgoat/webgoat:latest
           build-args: |
             webgoat_version=${{ env.WEBGOAT_MAVEN_VERSION }}
 
@@ -63,7 +63,7 @@ jobs:
           echo Downloading Mend CLI
           curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend
           echo "Start Mend image scan"
-          ./mend image webgoat/webgoat:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
+          ./mend image sam-webgoat/webgoat:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
           ./mend iac -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}} 
           ./mend code -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}} -j 2 --js 2
 
