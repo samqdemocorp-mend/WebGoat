@@ -5,8 +5,11 @@ MAINTAINER "WebGoat team"
 RUN \
   useradd -ms /bin/bash webgoat && \
   chgrp -R 0 /home/webgoat && \
-  chmod -R g=u /home/webgoat && \
-  curl -LJO https://raw.githubusercontent.com/OWASP/wrongsecrets/master/src/test/resources/RSAprivatekey.pem
+  chmod -R g=u /home/webgoat
+RUN curl -LJO https://raw.githubusercontent.com/OWASP/wrongsecrets/master/src/test/resources/RSAprivatekey.pem  && \
+    curl -LJO https://raw.githubusercontent.com/OWASP/wrongsecrets/master/src/test/resources/secondkey.txt && \
+    curl -LJO https://raw.githubusercontent.com/OWASP/wrongsecrets/master/src/test/resources/thirdkey.txt && \
+    curl -LJO https://raw.githubusercontent.com/OWASP/wrongsecrets/master/src/test/resources/yourkey.txt
 
 USER webgoat
 
