@@ -35,8 +35,9 @@ jobs:
           WEBGOAT_MAVEN_VERSION=${{ github.ref_name }}
           echo "WEBGOAT_MAVEN_VERSION=${WEBGOAT_MAVEN_VERSION:1}" >> $GITHUB_ENV
           REPO=${{github.event.repository.name}}
-          echo "REPO=${REPO,,}" >> $GITHUB_ENV
+          REPO=${REPO,,}
           echo $REPO
+          echo "REPO=${REPO}" >> $GITHUB_ENV
       - name: Build with Maven
         run: |
           mvn --no-transfer-progress versions:set -DnewVersion=${{ env.WEBGOAT_MAVEN_VERSION }}
