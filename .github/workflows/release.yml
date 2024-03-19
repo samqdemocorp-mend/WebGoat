@@ -34,7 +34,8 @@ jobs:
           echo "WEBGOAT_TAG_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           WEBGOAT_MAVEN_VERSION=${{ github.ref_name }}
           echo "WEBGOAT_MAVEN_VERSION=${WEBGOAT_MAVEN_VERSION:1}" >> $GITHUB_ENV
-          echo "REPO=${GITHUB_REPOSITORY@L}" >> $GITHUB_ENV
+          REPO=${{github.event.repository.name}}
+          echo "REPO=${REPO@L}" >> $GITHUB_ENV
           echo $REPO
       - name: Build with Maven
         run: |
