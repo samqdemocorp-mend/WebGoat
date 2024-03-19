@@ -28,16 +28,20 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      
+      - id: reponame
+        uses: ASzc/change-string-case-action@v6
+        with:
+          string: ${{github.event.repository.name}}
  
       - name: "Set labels for ${{ github.ref }}"
         run: |
           echo "WEBGOAT_TAG_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           WEBGOAT_MAVEN_VERSION=${{ github.ref_name }}
           echo "WEBGOAT_MAVEN_VERSION=${WEBGOAT_MAVEN_VERSION:1}" >> $GITHUB_ENV
-          REPO=${{github.event.repository.name}}
-          REPO=$(echo "$REPO" | tr '[:upper:]' '[:lower:]')
-          echo $REPO
-          echo "REPO=${REPO}" >> $GITHUB_ENV
+          echo ${{steps.reponame.outputs.lowercase}
+
+
       - name: Build with Maven
         run: |
           mvn --no-transfer-progress versions:set -DnewVersion=${{ env.WEBGOAT_MAVEN_VERSION }}
@@ -52,8 +56,8 @@ jobs:
           push: false
           load: true
           tags: |
-            ${{github.repository_owner}}/${REPO}:${{ env.WEBGOAT_TAG_VERSION }}
-            ${{github.repository_owner}}/${REPO}:latest
+            ${{github.repository_owner}}/${{steps.reponame.outputs.lowercase}:${{ env.WEBGOAT_TAG_VERSION }}
+            ${{github.repository_owner}}/${{steps.reponame.outputs.lowercase}:latest
           build-args: |
             webgoat_version=${{ env.WEBGOAT_MAVEN_VERSION }}
 
@@ -67,7 +71,7 @@ jobs:
           echo Downloading Mend CLI
           curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend
           echo "Start Mend image scan"
-          ./mend image ${{github.repository_owner}}/${REPO}:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
+          ./mend image ${{github.repository_owner}}/${{steps.reponame.outputs.lowercase}:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
           ./mend iac -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}} 
           ./mend code -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}} -j 2 --js 2
 
@@ -81,4 +85,4 @@ jobs:
           echo Downloading Mend CLI
           curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend
           echo "Start Mend image scan"
-          ./mend image ${{github.repository_owner}}/${REPO}:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}
+          ./mend image ${{github.repository_owner}}/${{steps.reponame.outputs.lowercase}:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}
