@@ -29,16 +29,24 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
  
+      - id: reponame
+        uses: ASzc/change-string-case-action@v6
+        with:
+          string: ${{github.event.repository.name}}
+   
       - name: "Set labels for ${{ github.ref }}"
         run: |
           echo "WEBGOAT_TAG_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           WEBGOAT_MAVEN_VERSION=${{ github.ref_name }}
           echo "WEBGOAT_MAVEN_VERSION=${WEBGOAT_MAVEN_VERSION:1}" >> $GITHUB_ENV
+          echo ${{steps.reponame.outputs.lowercase}}
+  
+  
       - name: Build with Maven
         run: |
           mvn --no-transfer-progress versions:set -DnewVersion=${{ env.WEBGOAT_MAVEN_VERSION }}
           mvn --no-transfer-progress install -DskipTests
-
+  
       - name: "Docker Build Release"
         if: startsWith(github.ref, 'refs/heads/v') || github.ref == 'refs/heads/main' && github.event_name == 'push' 
         uses: docker/build-push-action@v5.0.0
@@ -48,12 +56,12 @@ jobs:
           push: false
           load: true
           tags: |
-            webgoat/webgoat:${{ env.WEBGOAT_TAG_VERSION }}
-            webgoat/webgoat:latest
+            ${{github.repository_owner}}/${{steps.reponame.outputs.lowercase}}:${{ env.WEBGOAT_TAG_VERSION }}
+            ${{github.repository_owner}}/${{steps.reponame.outputs.lowercase}}:latest
           build-args: |
             webgoat_version=${{ env.WEBGOAT_MAVEN_VERSION }}
-
-      - name: Mend CLI Image Scan on Release
+  
+      - name: Mend CLI Scan on Release
         if: startsWith(github.ref, 'refs/heads/v') && github.event_name == 'push'
         env:
           MEND_EMAIL: ${{secrets.MEND_EMAIL}}
@@ -63,8 +71,10 @@ jobs:
           echo Downloading Mend CLI
           curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend
           echo "Start Mend image scan"
-          ./mend image webgoat/webgoat:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
-
+          ./mend image ${{github.repository_owner}}/${{steps.reponame.outputs.lowercase}}:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
+          ./mend iac -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}} 
+          ./mend code -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}} -j 2 --js 2
+  
       - name: Mend CLI Image Scan on Main
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         env:
@@ -75,4 +85,4 @@ jobs:
           echo Downloading Mend CLI
           curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend
           echo "Start Mend image scan"
-          ./mend image webgoat/webgoat:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}
+          ./mend image ${{github.repository_owner}}/${{steps.reponame.outputs.lowercase}}:${{ env.WEBGOAT_TAG_VERSION }} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}
